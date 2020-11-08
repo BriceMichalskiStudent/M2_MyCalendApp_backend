@@ -31,6 +31,6 @@
     "tsc": "node ./node_modules/typescript/bin/tsc",
     "build": "npm install && node ./node_modules/typescript/bin/tsc",
     "start": "node dist/server.js",
-    "watch": "nodemon --watch server --ext ts --exec ts-node --ignore '*.test.ts' --delay 3 server/server.ts"
+    "watch": "nodemon --watch server --ext ts --exec ts-node --ignore '*.test.ts' --delay 3 server.ts"
   }
 }
