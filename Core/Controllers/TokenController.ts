@@ -20,7 +20,7 @@ export default function (crudRepository: CrudRepository) {
     }
 
     async function create(req: any, res: any) {
-        let user: any = await crudRepository.getCustom({"email": req.body.email});
+        let user: any = await crudRepository.getCustom({"mail": req.body.mail});
 
         if (!user) {
             res.status(400).json("Ce compte est introuvable.");
