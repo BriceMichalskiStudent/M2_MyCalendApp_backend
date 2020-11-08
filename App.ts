@@ -57,7 +57,6 @@ class App {
         this.app.use('/token/', TokenController(userRepository));
         this.swaggerSetup();
         this.monitoringSetup();
-        this.ensureEntitiesCreated().then();
     }
 
     private async ensureEntitiesCreated(): Promise<void>{
@@ -70,6 +69,7 @@ class App {
         mongoose.set('useFindAndModify', false);
         mongoose.connection.once('open', () => {
             console.log('\x1b[34m%s\x1b[0m', 'Connected to Mongo via Mongoose');
+            this.ensureEntitiesCreated().then();
         });
         mongoose.connection.on('error', (err) => {
             console.error('Unable to connect to Mongo via Mongoose', err);
@@ -78,6 +78,7 @@ class App {
 
     private swaggerSetup() {
         let options = {
+            "openapi": "3.0.0",
             "host": this.url,
             "servers": [
                 {

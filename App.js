@@ -93,7 +93,6 @@ var App = /** @class */ (function () {
         this.app.use('/token/', TokenController_1.default(userRepository));
         this.swaggerSetup();
         this.monitoringSetup();
-        this.ensureEntitiesCreated().then();
     };
     App.prototype.ensureEntitiesCreated = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -111,10 +110,12 @@ var App = /** @class */ (function () {
         });
     };
     App.prototype.mongoSetup = function () {
+        var _this = this;
         mongoose_1.default.connect(this.mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
         mongoose_1.default.set('useFindAndModify', false);
         mongoose_1.default.connection.once('open', function () {
             console.log('\x1b[34m%s\x1b[0m', 'Connected to Mongo via Mongoose');
+            _this.ensureEntitiesCreated().then();
         });
         mongoose_1.default.connection.on('error', function (err) {
             console.error('Unable to connect to Mongo via Mongoose', err);
@@ -122,6 +123,7 @@ var App = /** @class */ (function () {
     };
     App.prototype.swaggerSetup = function () {
         var options = {
+            "openapi": "3.0.0",
             "host": this.url,
             "servers": [
                 {
