@@ -28,7 +28,7 @@ export default function (crudRepository: CrudRepository) {
     async function create(req: any, res: any) {
         console.log("file : ", req.file);
         // GED.Save(req.file);
-        let user = await crudRepository.getCustom({"email" : req.body.email});
+        let user = await crudRepository.getCustom({"email" : req.body.mail});
 
         if(user) {
             res.status(400).json("Un utilisateur existe déjà avec cette adresse mail.");
