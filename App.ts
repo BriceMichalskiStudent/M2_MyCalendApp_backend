@@ -59,17 +59,17 @@ class App {
         this.monitoringSetup();
     }
 
-    private async ensureEntitiesCreated(): Promise<void>{
+    private static async ensureEntitiesCreated(): Promise<void>{
         await RoleModel.EnsureEntities();
         await TestModel.EnsureEntities();
     }
 
-    private mongoSetup(): void {
-        mongoose.connect(this.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
+    private async mongoSetup(): Promise<any> {
+        await mongoose.connect(this.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
         mongoose.set('useFindAndModify', false);
         mongoose.connection.once('open', () => {
             console.log('\x1b[34m%s\x1b[0m', 'Connected to Mongo via Mongoose');
-            this.ensureEntitiesCreated().then();
+            App.ensureEntitiesCreated().then();
         });
         mongoose.connection.on('error', (err) => {
             console.error('Unable to connect to Mongo via Mongoose', err);

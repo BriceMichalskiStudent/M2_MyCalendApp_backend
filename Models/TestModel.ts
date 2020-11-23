@@ -21,7 +21,7 @@ const schema = new mongoose.Schema({
 
 let model = mongoose.model('Tests', schema);
 
-const ensureCreated = async () => {
+const ensureCreated = async (): Promise<void> => {
     for (let i = 1; i < 101; i++) {
         if ((await model.findOne({code: i})) === null) {
             await model.create({
