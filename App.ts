@@ -80,6 +80,7 @@ class App {
         let options = {
             "openapi": "3.0.0",
             "host": this.url,
+            "swagger": "2.0",
             "servers": [
                 {
                     "url": this.url,
@@ -87,7 +88,7 @@ class App {
                 },
             ],
             "info": {
-                "version": "1.0.0",
+                "version": "2.0",
                 "title": "MyCalendApp API",
                 "description": "MyCalendApp is a School Project aiming to implement a social network. The particularity of this social network is to be calendar oriented with shared events, in public or private, with comments, a list of participants, a photo sharing on past events, a discussion and an organization tab for future events.",
                 "contact": {"email": "benjamin.lhonnen@ynov.com"},

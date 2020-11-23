@@ -24,12 +24,13 @@
     "nodemon": "^2.0.6",
     "swagger": "^0.7.5",
     "swagger-ui-express": "^4.1.4",
-    "ts-node": "^9.0.0"
+    "ts-node": "^9.0.0",
+    "typescript": "^4.0.5"
   },
   "scripts": {
-    "tsc": "tsc",
-    "build": "tsc",
-    "start": "tsc && node server",
-    "watch": "nodemon --watch server --ext ts --exec ts-node --ignore '*.test.ts' --delay 3 server/server.ts"
+    "tsc": "node ./node_modules/typescript/bin/tsc",
+    "build": "npm install && node ./node_modules/typescript/bin/tsc",
+    "start": "node dist/server.js",
+    "watch": "nodemon --watch server --ext ts --exec ts-node --ignore '*.test.ts' --delay 3 server.ts"
   }
 }
