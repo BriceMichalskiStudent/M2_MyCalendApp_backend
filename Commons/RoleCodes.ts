@@ -1,4 +1,4 @@
 export default class RoleCodes {
-    public static ADMIN: string = "ADMIN";
-    public static USER: string = "USER";
+    public static ADMIN = 'ADMIN';
+    public static USER = 'USER';
 }

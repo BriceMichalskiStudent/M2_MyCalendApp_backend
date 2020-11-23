@@ -1,0 +1,62 @@
+name: Continuous Integration
+
+# Run this workflow every time a new commit pushed to your repository
+on: [push]
+
+jobs: 
+  lint:
+    name: Lint code base
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lint > Checkout Code
+        uses: actions/checkout@v2
+    
+      - name: Lint > Run Super-Linter
+        uses: github/super-linter@v3
+        env:
+          VALIDATE_JSON: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_TYPESCRIPT_ES: true
+          VALIDATE_JAVASCRIPT_ES: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  build: 
+    name: Assert project can build
+    runs-on:  ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x]
+
+    steps:
+      - name: Build > Checkout Code
+        uses: actions/checkout@v2
+      
+      - name: Build > Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Build > npm build
+        run: npm run build 
+      
+  security:
+    name: Dependency Security Audit
+    runs-on:  ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 11.x, 12.x, 13.x, 14.x, 15.x]
+
+    steps:
+      - name: Security > Checkout Code
+        uses: actions/checkout@v2
+    
+      - name: Security > Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      
+      - name: Security > npm audit
+        run: npm audit

@@ -1,15 +1,24 @@
-### Install
-#### 1. créez un fichier .env avec : 
-```
+# MyCalendApp Backend
+
+[![GitHub Super-Linter](https://github.com/MyCalendApp/backend/workflows/Continuous%20Integration/badge.svg)](https://github.com/marketplace/actions/super-linter)
+
+## Install
+
+- 1. Installation des dependances
+
+``` bash
 yarn install
 ```
-ou 
-```
-npm install 
+
+ou
+
+``` bash
+npm install
 ```
 
-#### 2. créer un fichier .env avec : 
-```
+- 2. créer un fichier .env
+
+``` conf
 PORT={PORT de l'app (3000)}
 HOST={HOST de la game (localhost)}
 WEBURl={URL pour le cors (localhost:3001)}
@@ -18,21 +27,26 @@ JWT_SECRET_KEY={SECRET DU JWT}
 PUBLIC={CHEMIN DU DOSSIER public (./public)}
 ```
 
-###lancer l'appli : 
-```
+## lancer l'appli
+
+``` bash
 yarn start
 ```
+
 ou
-```
+
+``` bash
 npm run start
 ```
 
-###lancer l'appli avec reload auto : 
-```
+## lancer l'appli avec reload auto
+
+``` bash
 yarn watch
 ```
+
 ou
-```
+
+``` bash
 npm run watch
 ```
-
