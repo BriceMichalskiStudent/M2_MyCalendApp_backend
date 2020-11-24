@@ -1,8 +1,7 @@
 # MyCalendApp Backend
 
-
+[![GitHub Super-Linter](https://github.com/MyCalendApp/backend/workflows/Continuous%20Integration/badge.svg)](https://github.com/MyCalendApp/backend/actions)
 [![Website Prod](https://img.shields.io/github/deployments/MyCalendApp/backend/api-mycalendapp?label=deployment )](https://api-mycalendapp.herokuapp.com/ping)
-[![GitHub Super-Linter](https://github.com/MyCalendApp/backend/workflows/Continuous%20Integration/badge.svg)](https://github.com/marketplace/actions/super-linter)
 [![Website Prod](https://img.shields.io/website-up-down-green-red/http/api-mycalendapp.herokuapp.com/ping)](https://api-mycalendapp.herokuapp.com/ping)
 ![Open Source? Yes!](https://badgen.net/badge/Open%20Source%20%3F/Yes%21/blue?icon=github)
 [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
