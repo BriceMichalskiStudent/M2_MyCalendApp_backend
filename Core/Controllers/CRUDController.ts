@@ -8,8 +8,8 @@ export default function (crudRepository: _crudRepository) {
   router.delete('/:id', del)
 
   async function del (req: any, res: any) {
-    const data = await crudRepository.del(req.params.id)
-    res.json(data)
+    await crudRepository.del(req.params.id)
+    res.send()
   }
 
   async function update (req: any, res: any) {

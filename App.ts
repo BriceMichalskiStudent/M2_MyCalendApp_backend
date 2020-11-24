@@ -11,11 +11,15 @@ import AuthMiddleware from './Core/Middleware/AuthMiddleware'
 
 import RoleCodes from './Commons/RoleCodes'
 
-import UserModel from './Core/Models/UserModel'
-import RoleModel from './Core/Models/RoleModel'
-import TestModel from './Models/TestModel'
-import CRUDRepository from './Core/Repository/CrudRepository'
-import UserRepository from './Core/Repository/UserRepository'
+import UserModel from "./Core/Models/UserModel";
+import RoleModel from "./Core/Models/RoleModel";
+import TestModel from "./Models/TestModel";
+import EventModel from "./Models/EventModel";
+
+import CRUDRepository from "./Core/Repository/CrudRepository";
+import UserRepository from "./Core/Repository/UserRepository";
+import EventRepository from "./Repository/EventRepository"
+
 require('dotenv').config()
 
 class App {
@@ -49,8 +53,9 @@ class App {
         // support application/x-www-form-urlencoded post data
         this.app.use(bodyParser.urlencoded({extended: false}))
 
-      // API router
-      this.app.use('/test/', AuthMiddleware(RoleCodes.USER), CRUDController(new CRUDRepository(TestModel.TestModel)))
+        // API router
+        this.app.use('/test/', AuthMiddleware(RoleCodes.USER), CRUDController(new CRUDRepository(TestModel.TestModel)));
+        this.app.use('/event/', AuthMiddleware(RoleCodes.USER), CRUDController(new EventRepository(EventModel.EventModel)));
 
         const userRepository: UserRepository = new UserRepository(UserModel.UserModel)
         this.app.use('/user/', UserController(userRepository))

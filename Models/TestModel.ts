@@ -31,4 +31,5 @@ const ensureCreated = async ():Promise<void> => {
     }
   }
 }
+
 export default { TestModel: model, EnsureEntities: ensureCreated }

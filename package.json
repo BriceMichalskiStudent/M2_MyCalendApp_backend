@@ -35,8 +35,8 @@
     "tsc": "node ./node_modules/typescript/bin/tsc",
     "build": "npm install && node ./node_modules/typescript/bin/tsc",
     "start": "node dist/server.js",
-    "debug": "npm install && node ./node_modules/typescript/bin/tsc && node dist/server.js",
-    "watch": "nodemon --watch server --ext ts --exec ts-node --ignore '*.test.ts' --delay 3 server.ts",
+    "launch": "node ./node_modules/typescript/bin/tsc && node dist/server.js",
+    "watch": "nodemon --exec ts-node server.ts",
     "lint": "standardx './**/*.ts'",
     "lint-fix": "standardx --fix './**/*.ts'"
   },
