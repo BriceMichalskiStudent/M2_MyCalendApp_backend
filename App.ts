@@ -1,16 +1,15 @@
-import express from "express";
-import * as bodyParser from "body-parser";
-import mongoose from "mongoose";
-import cors from "cors";
-import swaggerDoc from "./Core/Swagger/Swagger";
+import express from 'express'
+import * as bodyParser from 'body-parser'
+import mongoose from 'mongoose'
+import cors from 'cors'
 
-import CRUDController from "./Core/Controllers/CRUDController";
-import UserController from "./Core/Controllers/UserController";
-import TokenController from "./Core/Controllers/TokenController";
+import CRUDController from './Core/Controllers/CRUDController'
+import UserController from './Core/Controllers/UserController'
+import TokenController from './Core/Controllers/TokenController'
 
-import AuthMiddleware from "./Core/Middleware/AuthMiddleware";
+import AuthMiddleware from './Core/Middleware/AuthMiddleware'
 
-import RoleCodes from "./Commons/RoleCodes";
+import RoleCodes from './Commons/RoleCodes'
 
 import UserModel from "./Core/Models/UserModel";
 import RoleModel from "./Core/Models/RoleModel";
@@ -21,55 +20,56 @@ import CRUDRepository from "./Core/Repository/CrudRepository";
 import UserRepository from "./Core/Repository/UserRepository";
 import EventRepository from "./Repository/EventRepository"
 
+require('dotenv').config()
+
 class App {
     public app: express.Application;
-    public mongoUrl: string = process.env.MONGO_CONNECTION_STRING ?? "";
+    public mongoUrl: string = process.env.MONGO_CONNECTION_STRING ?? '';
 
     port = process.env.PORT ?? 3000;
-    host = process.env.HOST ?? "localhost";
-    url = `http://${this.host}${this.port ? ":" + this.port : ""}`;
+    host = process.env.HOST ?? 'localhost';
+    url = `http://${this.host}${this.port ? ':' + this.port : ''}`;
 
     constructor() {
-        this.app = express();
-        this.config();
+        this.app = express()
+        this.config()
         this.mongoSetup();
     }
-
 
     private config(): void {
         // Configuration du CORS pour l'url du site web
         const corsOptions = {
             origin: process.env.WEBURl,
             optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-        };
+        }
 
         // enable cors
-        this.app.use(cors(corsOptions));
-        this.app.use(express.static(process.env.PUBLIC ?? "./public"));
+        this.app.use(cors(corsOptions))
+        this.app.use(express.static(process.env.PUBLIC ?? './public'))
 
         // support application/json type post data
-        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.json())
 
-        //support application/x-www-form-urlencoded post data
-        this.app.use(bodyParser.urlencoded({extended: false}));
+        // support application/x-www-form-urlencoded post data
+        this.app.use(bodyParser.urlencoded({extended: false}))
 
         // API router
         this.app.use('/test/', AuthMiddleware(RoleCodes.USER), CRUDController(new CRUDRepository(TestModel.TestModel)));
         this.app.use('/event/', AuthMiddleware(RoleCodes.USER), CRUDController(new EventRepository(EventModel.EventModel)));
 
-        const userRepository: UserRepository = new UserRepository(UserModel.UserModel);
-        this.app.use('/user/', UserController(userRepository));
-        this.app.use('/token/', TokenController(userRepository));
-        this.swaggerSetup();
-        this.monitoringSetup();
+        const userRepository: UserRepository = new UserRepository(UserModel.UserModel)
+        this.app.use('/user/', UserController(userRepository))
+        this.app.use('/token/', TokenController(userRepository))
+        this.monitoringSetup()
+        App.ensureEntitiesCreated().then()
     }
 
-    private static async ensureEntitiesCreated(): Promise<void>{
+    private static async ensureEntitiesCreated(): Promise<void> {
         await RoleModel.EnsureEntities();
         await TestModel.EnsureEntities();
     }
 
-    private async mongoSetup(): Promise<any> {
+    private mongoSetup(): void {
         mongoose.connect(this.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
         mongoose.set('useFindAndModify', false);
         mongoose.connection.once('open', () => {
@@ -81,39 +81,9 @@ class App {
         });
     }
 
-    private swaggerSetup() {
-        let options = {
-            "openapi": "3.0.0",
-            "host": this.url,
-            "swagger": "2.0",
-            "servers": [
-                {
-                    "url": this.url,
-                    "description": "Dev server url"
-                },
-            ],
-            "info": {
-                "version": "2.0",
-                "title": "MyCalendApp API",
-                "description": "MyCalendApp is a School Project aiming to implement a social network. The particularity of this social network is to be calendar oriented with shared events, in public or private, with comments, a list of participants, a photo sharing on past events, a discussion and an organization tab for future events.",
-                "contact": {"email": "benjamin.lhonnen@ynov.com"},
-                "license": {
-                    "name": "MIT",
-                    "url": "https://github.com/MyCalendApp/backend/blob/main/LICENSE"
-                }
-            },
-            "path": {},
-            "components": {
-                "schemas": ""
-            }
-        };
-
-        swaggerDoc.onGeneratorSwaggerDoc(this.app, options);
-    }
-
     private monitoringSetup() {
-        this.app.use(require('express-status-monitor')());
+        this.app.use(require('express-status-monitor')())
     }
 }
 
-export default new App().app;
+export default new App().app
