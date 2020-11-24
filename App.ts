@@ -15,8 +15,11 @@ import RoleCodes from "./Commons/RoleCodes";
 import UserModel from "./Core/Models/UserModel";
 import RoleModel from "./Core/Models/RoleModel";
 import TestModel from "./Models/TestModel";
+import EventModel from "./Models/EventModel";
+
 import CRUDRepository from "./Core/Repository/CrudRepository";
 import UserRepository from "./Core/Repository/UserRepository";
+import EventRepository from "./Repository/EventRepository"
 
 class App {
     public app: express.Application;
@@ -31,6 +34,7 @@ class App {
         this.config();
         this.mongoSetup();
     }
+
 
     private config(): void {
         // Configuration du CORS pour l'url du site web
@@ -51,6 +55,7 @@ class App {
 
         // API router
         this.app.use('/test/', AuthMiddleware(RoleCodes.USER), CRUDController(new CRUDRepository(TestModel.TestModel)));
+        this.app.use('/event/', AuthMiddleware(RoleCodes.USER), CRUDController(new EventRepository(EventModel.EventModel)));
 
         const userRepository: UserRepository = new UserRepository(UserModel.UserModel);
         this.app.use('/user/', UserController(userRepository));
@@ -65,7 +70,7 @@ class App {
     }
 
     private async mongoSetup(): Promise<any> {
-        await mongoose.connect(this.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
+        mongoose.connect(this.mongoUrl, {useNewUrlParser: true, useUnifiedTopology: true});
         mongoose.set('useFindAndModify', false);
         mongoose.connection.once('open', () => {
             console.log('\x1b[34m%s\x1b[0m', 'Connected to Mongo via Mongoose');
