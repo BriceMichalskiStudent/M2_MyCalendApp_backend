@@ -39,11 +39,12 @@ class App {
     private config(): void {
         // Configuration du CORS pour l'url du site web
         const corsOptions = {
-            origin: process.env.WEBURl,
+            origin: process.env.WEBURL,
             optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
         }
 
         // enable cors
+        console.log(corsOptions)
         this.app.use(cors(corsOptions))
         this.app.use(express.static(process.env.PUBLIC ?? './public'))
 
