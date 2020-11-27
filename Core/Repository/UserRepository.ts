@@ -8,10 +8,8 @@ export default class UserRepository extends CRUDRepository {
   }
 
   async beforeInsert (data: any): Promise<any> {
-    console.log('beforeInsert data: ', data)
     const copyData = Object.assign({}, data)
     copyData.password = bcrypt.hashSync(copyData.password, 10)
-    console.log('beforeInsert copyData.password: ', copyData.password)
     return copyData
   }
 }
