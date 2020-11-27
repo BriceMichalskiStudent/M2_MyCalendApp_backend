@@ -11,7 +11,7 @@ export default function (crudRepository: CrudRepository) {
   async function del (req: any, res: any) {
     const data: any = await crudRepository.get(req.params.id)
     data.token = null
-    data.save().exec()
+    await crudRepository.update(data)
     res.json(data)
   }
 
