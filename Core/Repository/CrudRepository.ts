@@ -20,6 +20,13 @@ export default class CRUDRepository extends _listRepository {
     return result
   }
 
+  public async patch (id: string, model: object) {
+    const reworkedModel = await this.beforePatch(model)
+    let result: any = await this.MongooseModel.findOneAndUpdate({ _id:id }, reworkedModel, { new: true })
+    result = await this.afterPatch(model, result)
+    return result
+  }
+
   public async insert (model: object) {
     const reworkedModel = await this.beforeInsert(model)
     let result: object = await new this.MongooseModel(reworkedModel).save()
@@ -39,6 +46,14 @@ export default class CRUDRepository extends _listRepository {
   }
 
   async afterUpdate (model: any, result: any): Promise<any> {
+    return result
+  }
+
+  async beforePatch (data: any): Promise<any> {
+    return data
+  }
+
+  async afterPatch (model: any, result: any): Promise<any> {
     return result
   }
 

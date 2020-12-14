@@ -17,11 +17,16 @@ import TestModel from './Models/TestModel';
 import TagModel from './Models/TagModel';
 import EventModel from "./Models/EventModel";
 
-import CRUDRepository from './Core/Repository/CrudRepository';
-import UserRepository from './Core/Repository/UserRepository';
-import EventRepository from "./Repository/EventRepository";
+import CRUDRepository from "./Core/Repository/CrudRepository";
+import UserRepository from "./Core/Repository/UserRepository";
+import EventRepository from "./Repository/EventRepository"
+import IocManager from "./Core/IocManager";
 
-require('dotenv').config()
+import {config} from "dotenv";
+
+import express_status_monitor from "express-status-monitor";
+
+config()
 
 class App {
     public app: express.Application;
@@ -33,6 +38,7 @@ class App {
 
     constructor() {
         this.app = express()
+        App.registerRepositories();
         this.config()
         this.mongoSetup();
     }
@@ -55,16 +61,24 @@ class App {
         // support application/x-www-form-urlencoded post data
         this.app.use(bodyParser.urlencoded({extended: false}))
 
-      // API router
-      this.app.use('/test/', AuthMiddleware(RoleCodes.USER), CRUDController(new CRUDRepository(TestModel.TestModel)));
-      this.app.use('/tag/', AuthMiddleware(RoleCodes.USER), CRUDController(new CRUDRepository(TagModel.TagModel)));
-        this.app.use('/event/', AuthMiddleware(RoleCodes.USER), CRUDController(new EventRepository(EventModel.EventModel)));
+        // API router
+        this.app.use('/test/', CRUDController(IocManager.GetInstance().GetSingleton("TestCrudRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
+        this.app.use('/tag/', AuthMiddleware(RoleCodes.USER), CRUDController(IocManager.GetInstance().GetSingleton("TagRepository")));
+        this.app.use('/event/', CRUDController(IocManager.GetInstance().GetSingleton("EventRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
 
-        const userRepository: UserRepository = new UserRepository(UserModel.UserModel)
+        const userRepository: UserRepository = IocManager.GetInstance().GetSingleton("UserRepository")
         this.app.use('/user/', UserController(userRepository))
         this.app.use('/token/', TokenController(userRepository))
         this.monitoringSetup()
         App.ensureEntitiesCreated().then()
+    }
+
+    private static registerRepositories() {
+        IocManager.GetInstance().RegisterSingleton("TestCrudRepository", new CRUDRepository(TestModel.TestModel));
+        IocManager.GetInstance().RegisterSingleton("RoleCrudRepository", new CRUDRepository(RoleModel.RoleModel));
+        IocManager.GetInstance().RegisterSingleton("UserRepository", new UserRepository(UserModel.UserModel));
+        IocManager.GetInstance().RegisterSingleton("EventRepository", new EventRepository(EventModel.EventModel));
+        IocManager.GetInstance().RegisterSingleton("TagRepository", new CRUDRepository(TagModel.TagModel));
     }
 
     private static async ensureEntitiesCreated(): Promise<void> {
@@ -85,7 +99,7 @@ class App {
     }
 
     private monitoringSetup() {
-        this.app.use(require('express-status-monitor')())
+        this.app.use(express_status_monitor())
     }
 }
 

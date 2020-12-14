@@ -23,11 +23,11 @@ const model = mongoose.model('Tests', schema)
 const ensureCreated = async ():Promise<void> => {
   for (let i = 1; i < 101; i++) {
     if ((await model.findOne({ code: i })) === null) {
-      await model.create({
+      await new model({
         code: i,
         title: 'Test ' + i,
         values: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In congue velit non leo vehicula, ut tincidunt nibh tempor. Pellentesque sed accumsan mauris. Sed ornare tristique semper.'
-      })
+      }).save()
     }
   }
 }

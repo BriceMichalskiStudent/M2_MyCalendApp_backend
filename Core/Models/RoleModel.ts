@@ -20,10 +20,10 @@ const model = mongoose.model('Roles', schema)
 
 const ensureRoleCreated = async () => {
   if ((await model.findOne({ code: RoleCodes.ADMIN })) === null) {
-    await model.create({ code: RoleCodes.ADMIN, name: 'Administrateur' })
+    await new model({ code: RoleCodes.ADMIN, name: 'Administrateur' }).save()
   }
   if ((await model.findOne({ code: RoleCodes.USER })) === null) {
-    await model.create({ code: RoleCodes.USER, name: 'Utilisateur' })
+   await new model({ code: RoleCodes.USER, name: 'Utilisateur' }).save()
   }
 }
 
