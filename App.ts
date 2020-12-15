@@ -24,9 +24,12 @@ import EventRepository from "./Repository/EventRepository"
 import IocManager from "./Core/IocManager";
 
 import {config} from "dotenv";
+import fileUpload from "express-fileupload";
 
 import express_status_monitor from "express-status-monitor";
 import PostController from "./Controller/PostController";
+
+import aws from "aws-sdk";
 
 config()
 
@@ -55,6 +58,7 @@ class App {
         // enable cors
         console.log(corsOptions)
         this.app.use(cors(corsOptions))
+        this.app.use(fileUpload())
         this.app.use(express.static(process.env.PUBLIC ?? './public'))
 
         // support application/json type post data
@@ -84,7 +88,10 @@ class App {
         IocManager.GetInstance().RegisterSingleton("UserRepository", new UserRepository(UserModel.UserModel, [{name: "creator"}]));
         IocManager.GetInstance().RegisterSingleton("EventRepository", new EventRepository(EventModel.EventModel, [{name: "tags"}, {name: "creator"}]));
         IocManager.GetInstance().RegisterSingleton("TagRepository", new CRUDRepository(TagModel.TagModel));
+        aws.config.region = process.env.AWS_REGION;
+        IocManager.GetInstance().RegisterSingleton("AWS", aws);
         IocManager.GetInstance().RegisterSingleton("PostRepository", new CRUDRepository(PostModel.PostModel, [{name: "creator"}]));
+
     }
 
     private static async ensureEntitiesCreated(): Promise<void> {

@@ -4,6 +4,7 @@ import * as express from "express";
 import _listController from "./ListController";
 import AuthMiddleware from "../Middleware/AuthMiddleware";
 import RoleCodes from "../../Commons/RoleCodes";
+import IocManager from "../IocManager";
 
 export default function (crudRepository: CrudRepository) {
     const router = express.Router();
@@ -65,17 +66,40 @@ export default function (crudRepository: CrudRepository) {
 
     async function create(req: any, res: any) {
         try {
-            // GED.Save(req.file);
-            const user = await crudRepository.getCustom({"mail": req.body.mail});
-
+            console.log(req.files ? req.files.img : null);
+            const userToSave = JSON.parse(req.body.user);
+            const user = await crudRepository.getCustom({"mail": userToSave.mail});
             if (user) {
                 res.status(400).json({message: "Un utilisateur existe déjà avec cette adresse mail."});
                 return;
             }
+            if(!userToSave || !req.files || !req.files.img){
+                res.status(400).json({message: "Des informations sur l'utilisateur sont manquantes"});
+                return;
+            }
 
-            const data = await crudRepository.insert(req.body);
-            res.status(201).json(data);
+            const s3 = new (IocManager.GetInstance().GetSingleton("AWS")).S3();
+            const fileName = process.env.FILE_REPOSITORY + "/" + req.files.img.name;
+            const fileType = req.files.img.mimetype;
+            const s3Params = {
+                Bucket: process.env.S3_BUCKET,
+                Key: fileName,
+                Expires: 60,
+                ContentType: fileType,
+                ACL: 'public-read',
+                Body: req.files.img.data
+            };
 
+            s3.putObject(s3Params, async (err, data) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log("data : ",data);
+                }
+                userToSave.imgUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+                const userCreated = await crudRepository.insert(userToSave);
+                res.status(201).json(userCreated);
+            });
         } catch (e) {
             console.error(e)
             res.status(500).json({message: "Une erreur est survenu"})

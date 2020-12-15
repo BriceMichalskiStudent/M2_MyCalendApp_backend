@@ -26,6 +26,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  imgUrl: {
+    type: String,
+    required: false
+  },
   followingIds: [{
     type: Schema.Types.ObjectId,
     required: true
