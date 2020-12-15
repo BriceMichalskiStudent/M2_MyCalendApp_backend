@@ -12,7 +12,6 @@ export default function (role: string) {
     }
     const token = req.headers.authorization.replace("Bearer ", "");
 
-    console.error('[AuthMiddleware] token : ', token)
     if (!token) {
       res.status(401).json({ message: "Vous n'étes pas autorisez à utiliser l'application" })
       return
