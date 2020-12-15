@@ -17,6 +17,7 @@ import TestModel from './Models/TestModel';
 import TagModel from './Models/TagModel';
 import EventModel from "./Models/EventModel";
 
+import PostModel from "./Models/PostModel";
 import CRUDRepository from "./Core/Repository/CrudRepository";
 import UserRepository from "./Core/Repository/UserRepository";
 import EventRepository from "./Repository/EventRepository"
@@ -25,6 +26,7 @@ import IocManager from "./Core/IocManager";
 import {config} from "dotenv";
 
 import express_status_monitor from "express-status-monitor";
+import PostController from "./Controller/PostController";
 
 config()
 
@@ -63,8 +65,11 @@ class App {
 
         // API router
         this.app.use('/test/', CRUDController(IocManager.GetInstance().GetSingleton("TestCrudRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
-        this.app.use('/tag/', AuthMiddleware(RoleCodes.USER), CRUDController(IocManager.GetInstance().GetSingleton("TagRepository")));
+        this.app.use('/tag/', CRUDController(IocManager.GetInstance().GetSingleton("TagRepository"), {crudAll: AuthMiddleware(RoleCodes.ADMIN)}));
         this.app.use('/event/', CRUDController(IocManager.GetInstance().GetSingleton("EventRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
+        this.app.use('/post/', PostController(IocManager.GetInstance().GetSingleton("PostRepository"),
+            IocManager.GetInstance().GetSingleton("EventRepository"),
+            {crudAll: AuthMiddleware(RoleCodes.USER)}));
 
         const userRepository: UserRepository = IocManager.GetInstance().GetSingleton("UserRepository")
         this.app.use('/user/', UserController(userRepository))
@@ -76,9 +81,10 @@ class App {
     private static registerRepositories() {
         IocManager.GetInstance().RegisterSingleton("TestCrudRepository", new CRUDRepository(TestModel.TestModel));
         IocManager.GetInstance().RegisterSingleton("RoleCrudRepository", new CRUDRepository(RoleModel.RoleModel));
-        IocManager.GetInstance().RegisterSingleton("UserRepository", new UserRepository(UserModel.UserModel));
-        IocManager.GetInstance().RegisterSingleton("EventRepository", new EventRepository(EventModel.EventModel));
+        IocManager.GetInstance().RegisterSingleton("UserRepository", new UserRepository(UserModel.UserModel, [{name: "creator"}]));
+        IocManager.GetInstance().RegisterSingleton("EventRepository", new EventRepository(EventModel.EventModel, [{name: "tags"}, {name: "creator"}]));
         IocManager.GetInstance().RegisterSingleton("TagRepository", new CRUDRepository(TagModel.TagModel));
+        IocManager.GetInstance().RegisterSingleton("PostRepository", new CRUDRepository(PostModel.PostModel, [{name: "creator"}]));
     }
 
     private static async ensureEntitiesCreated(): Promise<void> {

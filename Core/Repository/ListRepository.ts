@@ -24,11 +24,13 @@ export default class ListRepository {
         return result
     }
 
-    async list() {
-        let result = this.MongooseModel.find()
-        for (const populate of this.listPopulates) {
-            const getPopulate = this.reconstructPopulate(populate)
-            result.populate(getPopulate)
+    async list(where: any, withPopulate = true) {
+        const result = this.MongooseModel.find(where)
+        if(withPopulate){
+            for (const populate of this.listPopulates) {
+                const getPopulate = this.reconstructPopulate(populate)
+                result.populate(getPopulate)
+            }
         }
 
         let values = await result.exec()
@@ -36,25 +38,30 @@ export default class ListRepository {
         return values
     }
 
-    async get(id: string) {
-        let result = this.MongooseModel.findById(id)
-        for (const populate of this.getPopulates) {
-            const getPopulate = this.reconstructPopulate(populate)
-            result.populate(getPopulate)
+    async get(id: string, withPopulate = true) {
+        const result = this.MongooseModel.findById(id)
+        if(withPopulate){
+            for (const populate of this.getPopulates) {
+                const getPopulate = this.reconstructPopulate(populate)
+                console.log("getPopulate : ", getPopulate)
+                result.populate(getPopulate)
+            }
         }
-
+        
         let values = await result.exec()
         values = await this.afterGet(values)
         return values
     }
 
-    async getCustom(where: any) {
+    async getCustom(where: any, withPopulate = true) {
         const result = this.MongooseModel.findOne(where)
-        for (const populate of this.getPopulates) {
-            const getPopulate = this.reconstructPopulate(populate)
-            result.populate(getPopulate)
+        if(withPopulate){
+            for (const populate of this.getPopulates) {
+                const getPopulate = this.reconstructPopulate(populate)
+                console.log("getPopulate : ", getPopulate)
+                result.populate(getPopulate)
+            }
         }
-
         let values = await result.exec()
         values = await this.afterGetCustom(values)
         return values
