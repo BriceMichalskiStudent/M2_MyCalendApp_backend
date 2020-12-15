@@ -8,7 +8,12 @@ export default function (router: any, listRepository: ListRepository, option: an
 
     async function list(req: any, res: any) {
         try {
-            const data = await listRepository.list({})
+            console.log(req.query)
+            let query = null;
+            if(req.query.q){
+                query = JSON.parse(req.query.q)
+            }
+            const data = await listRepository.list(query)
             res.status(200).json(data)
         } catch (e){
             console.error(e)

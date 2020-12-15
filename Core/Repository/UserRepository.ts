@@ -27,4 +27,11 @@ export default class UserRepository extends CRUDRepository {
         copyData.Roles.push(role["_id"])
         return copyData
     }
+
+    async beforeUpdate (data: any): Promise<any> {
+        if(data.password){
+            data.password = bcrypt.hashSync(data.password, 10)
+        }
+        return data
+    }
 }

@@ -86,12 +86,11 @@ class App {
         IocManager.GetInstance().RegisterSingleton("TestCrudRepository", new CRUDRepository(TestModel.TestModel));
         IocManager.GetInstance().RegisterSingleton("RoleCrudRepository", new CRUDRepository(RoleModel.RoleModel));
         IocManager.GetInstance().RegisterSingleton("UserRepository", new UserRepository(UserModel.UserModel, [{name: "creator"}]));
-        IocManager.GetInstance().RegisterSingleton("EventRepository", new EventRepository(EventModel.EventModel, [{name: "tags"}, {name: "creator"}], [{name: "tags"}]));
+        IocManager.GetInstance().RegisterSingleton("EventRepository", new EventRepository(EventModel.EventModel, [{name: "tags"}, {name: "creator"}]/*, [{name: "tags"}]*/));
         IocManager.GetInstance().RegisterSingleton("TagRepository", new CRUDRepository(TagModel.TagModel));
         aws.config.region = process.env.AWS_REGION;
         IocManager.GetInstance().RegisterSingleton("AWS", aws);
         IocManager.GetInstance().RegisterSingleton("PostRepository", new CRUDRepository(PostModel.PostModel, [{name: "creator"}]));
-
     }
 
     private static async ensureEntitiesCreated(): Promise<void> {

@@ -25,6 +25,8 @@ export default class ListRepository {
     }
 
     async list(where: any, withPopulate = true) {
+        where = where ?? {};
+        console.log(where);
         const result = this.MongooseModel.find(where)
         if(withPopulate){
             for (const populate of this.listPopulates) {
