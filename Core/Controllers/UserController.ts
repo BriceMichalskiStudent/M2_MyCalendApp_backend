@@ -69,12 +69,12 @@ export default function (crudRepository: CrudRepository) {
             console.log(req.files ? req.files.img : null);
             const userToSave = JSON.parse(req.body.user);
             const user = await crudRepository.getCustom({"mail": userToSave.mail});
-            if (user) {
-                res.status(400).json({message: "Un utilisateur existe déjà avec cette adresse mail."});
+            if (!userToSave) {
+                res.status(400).json({message: "Des informations sur l'utilisateur sont manquantes"});
                 return;
             }
-            if(!userToSave || !req.files || !req.files.img){
-                res.status(400).json({message: "Des informations sur l'utilisateur sont manquantes"});
+            if (user) {
+                res.status(400).json({message: "Un utilisateur existe déjà avec cette adresse mail."});
                 return;
             }
 
@@ -89,17 +89,22 @@ export default function (crudRepository: CrudRepository) {
                 ACL: 'public-read',
                 Body: req.files.img.data
             };
-
-            s3.putObject(s3Params, async (err, data) => {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log("data : ",data);
-                }
-                userToSave.imgUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+            if (!req.files || !req.files.img) {
                 const userCreated = await crudRepository.insert(userToSave);
                 res.status(201).json(userCreated);
-            });
+            } else {
+                s3.putObject(s3Params, async (err, data) => {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log("data : ", data);
+                    }
+                    userToSave.imgUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+                    const userCreated = await crudRepository.insert(userToSave);
+                    res.status(201).json(userCreated);
+                });
+            }
+
         } catch (e) {
             console.error(e)
             res.status(500).json({message: "Une erreur est survenu"})
