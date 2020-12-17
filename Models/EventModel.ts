@@ -13,6 +13,14 @@ const eventSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    city: {
+        type: String,
+        required: false,
+    },
+    address: {
+        type: String,
+        required: false,
+    },
     dateStart: {
         type: Date,
         required: true,
