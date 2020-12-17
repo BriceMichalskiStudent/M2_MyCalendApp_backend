@@ -48,9 +48,11 @@ export default function (crudRepository: CrudRepository) {
                 }
 
                 if (!req.files || !req.files.img) {
-                    const data = await crudRepository.update(req.body)
+                    console.log("User Update No file")
+                    const data = await crudRepository.update(userToSave)
                     res.status(200).json(data)
                 } else {
+                    console.log("User Update With file")
                     const s3 = new (IocManager.GetInstance().GetSingleton("AWS")).S3();
                     const fileName = process.env.FILE_REPOSITORY + "/" + uuidv4() + ".webp";
                     const fileType = req.files.img.mimetype;
