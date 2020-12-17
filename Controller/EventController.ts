@@ -17,7 +17,7 @@ export default function (crudRepository: CrudRepository, option: any = null) {
             console.log(req.files ? req.files.img : null);
             const eventToSave = JSON.parse(req.body.event);
             console.log(eventToSave)
-            if(!eventToSave || !req.files || !req.files.img){
+            if (!eventToSave) {
                 res.status(400).json({message: "Des informations sur l'evenement sont manquantes"});
                 return;
             }
@@ -34,16 +34,21 @@ export default function (crudRepository: CrudRepository, option: any = null) {
                 Body: req.files.img.data
             };
 
-            s3.putObject(s3Params, async (err, data) => {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log("data : ",data);
-                }
-                eventToSave.imgUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+            if (!req.files || !req.files.img) {
                 const eventCreated = await crudRepository.insert(eventToSave);
                 res.status(201).json(eventCreated);
-            });
+            } else {
+                s3.putObject(s3Params, async (err, data) => {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log("data : ", data);
+                    }
+                    eventToSave.imgUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+                    const eventCreated = await crudRepository.insert(eventToSave);
+                    res.status(201).json(eventCreated);
+                });
+            }
         } catch (e) {
             console.error(e)
             res.status(500).json({message: "Une erreur est survenu"})
