@@ -6,7 +6,7 @@ import AuthMiddleware from "../Middleware/AuthMiddleware";
 import RoleCodes from "../../Commons/RoleCodes";
 import IocManager from "../IocManager";
 import sharp from "sharp";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 export default function (crudRepository: CrudRepository) {
     const router = express.Router();
@@ -41,8 +41,43 @@ export default function (crudRepository: CrudRepository) {
     async function update(req: any, res: any) {
         try {
             if (canUpdateUser(req, req.params.id)) {
-                const data = await crudRepository.update(req.body)
-                res.status(200).json(data)
+                const userToSave = JSON.parse(req.body.user);
+                if (!userToSave) {
+                    res.status(400).json({message: "Des informations sur l'utilisateur sont manquantes"});
+                    return;
+                }
+
+                if (!req.files || !req.files.img) {
+                    const data = await crudRepository.update(req.body)
+                    res.status(200).json(data)
+                } else {
+                    const s3 = new (IocManager.GetInstance().GetSingleton("AWS")).S3();
+                    const fileName = process.env.FILE_REPOSITORY + "/" + uuidv4() + ".webp";
+                    const fileType = req.files.img.mimetype;
+
+                    const imageSharp = sharp(req.files.img.data);
+                    const buffer = await imageSharp.webp().toBuffer();
+
+                    const s3Params = {
+                        Bucket: process.env.S3_BUCKET,
+                        Key: fileName,
+                        Expires: 60,
+                        ContentType: fileType,
+                        ACL: 'public-read',
+                        Body: buffer
+                    };
+
+                    s3.putObject(s3Params, async (err, data) => {
+                        if (err) {
+                            console.log(err)
+                            res.status(500).json({message: "Une erreur est survenu"})
+                        } else {
+                            userToSave.imgUrl = `https://${process.env.S3_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
+                            const data = await crudRepository.update(userToSave)
+                            res.status(200).json(data)
+                        }
+                    });
+                }
             } else {
                 res.status(403).send("Vous n'avez pas le droit de modifier l'element")
             }
@@ -68,7 +103,6 @@ export default function (crudRepository: CrudRepository) {
 
     async function create(req: any, res: any) {
         try {
-            console.log(req.files ? req.files.img : null);
             const userToSave = JSON.parse(req.body.user);
             const user = await crudRepository.getCustom({"mail": userToSave.mail});
             if (!userToSave) {

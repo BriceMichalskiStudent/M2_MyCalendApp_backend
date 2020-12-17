@@ -31,6 +31,7 @@ import PostController from "./Controller/PostController";
 import EventController from "./Controller/EventController";
 
 import aws from "aws-sdk";
+import HelpController from "./Controller/HelpController";
 
 config()
 
@@ -79,6 +80,8 @@ class App {
         const userRepository: UserRepository = IocManager.GetInstance().GetSingleton("UserRepository")
         this.app.use('/user/', UserController(userRepository))
         this.app.use('/token/', TokenController(userRepository))
+        this.app.use('/helper/', HelpController())
+
         this.monitoringSetup()
         App.ensureEntitiesCreated().then()
     }
