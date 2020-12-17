@@ -28,6 +28,7 @@ import fileUpload from "express-fileupload";
 
 import express_status_monitor from "express-status-monitor";
 import PostController from "./Controller/PostController";
+import EventController from "./Controller/EventController";
 
 import aws from "aws-sdk";
 
@@ -70,7 +71,7 @@ class App {
         // API router
         this.app.use('/test/', CRUDController(IocManager.GetInstance().GetSingleton("TestCrudRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
         this.app.use('/tag/', CRUDController(IocManager.GetInstance().GetSingleton("TagRepository"), {crudAll: AuthMiddleware(RoleCodes.ADMIN)}));
-        this.app.use('/event/', CRUDController(IocManager.GetInstance().GetSingleton("EventRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
+        this.app.use('/event/', EventController(IocManager.GetInstance().GetSingleton("EventRepository"), {crudAll: AuthMiddleware(RoleCodes.USER)}));
         this.app.use('/post/', PostController(IocManager.GetInstance().GetSingleton("PostRepository"),
             IocManager.GetInstance().GetSingleton("EventRepository"),
             {crudAll: AuthMiddleware(RoleCodes.USER)}));

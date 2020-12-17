@@ -26,6 +26,10 @@ const eventSchema = new mongoose.Schema({
         required: true,
         ref: "Posts"
     }],
+    imgUrl: {
+        type: String,
+        required: false
+    },
     tags: [{
         type: Schema.Types.ObjectId,
         required: true,
