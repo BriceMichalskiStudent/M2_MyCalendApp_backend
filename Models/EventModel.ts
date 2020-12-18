@@ -48,6 +48,11 @@ const eventSchema = new mongoose.Schema({
         required: true,
         ref: "Users"
     },
+    followers: [{
+        type: Schema.Types.ObjectId,
+        required: true,
+        ref: "Users"
+    }],
     location: {
         type: {
             type: String, // Don't do `{ location: { type: String } }`

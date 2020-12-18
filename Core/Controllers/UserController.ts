@@ -7,8 +7,9 @@ import RoleCodes from "../../Commons/RoleCodes";
 import IocManager from "../IocManager";
 import sharp from "sharp";
 import {v4 as uuidv4} from 'uuid';
+import UserRepository from "../Repository/UserRepository";
 
-export default function (crudRepository: CrudRepository) {
+export default function (crudRepository: UserRepository) {
     const router = express.Router();
     router.get('/current', AuthMiddleware(RoleCodes.USER), current)
     _listController(router, crudRepository, {
@@ -18,6 +19,18 @@ export default function (crudRepository: CrudRepository) {
     router.post('/', /* FileMiddleware.single("file"), */ create)
     router.patch('/:id', AuthMiddleware(RoleCodes.USER), patch)
     router.delete('/:id', AuthMiddleware(RoleCodes.ADMIN), del)
+    router.get('/:id/events', AuthMiddleware(RoleCodes.USER), getWithEvents)
+
+    async function getWithEvents(req: any, res: any) {
+        try {
+            const data: any = await crudRepository.getWithEvents(req.params.id)
+            console.log(data)
+            res.status(200).json(data)
+        } catch (e) {
+            console.error(e)
+            res.status(500).send("Une erreur est survenu")
+        }
+    }
 
     async function current(req: any, res: any) {
         try {

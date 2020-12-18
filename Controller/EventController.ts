@@ -4,8 +4,9 @@ import * as express from "express";
 import IocManager from "../Core/IocManager";
 import sharp from "sharp";
 import { v4 as uuidv4 } from 'uuid';
+import EventRepository from "../Repository/EventRepository";
 
-export default function (crudRepository: CrudRepository, option: any = null) {
+export default function (crudRepository: EventRepository, option: any = null) {
     const router = express.Router();
 
     option = option ?? {};
@@ -13,7 +14,19 @@ export default function (crudRepository: CrudRepository, option: any = null) {
     option.create = create;
     option.update = update;
 
+    router.put('/:eventId/join/:userId', join)
+
     CRUDController(crudRepository, option, router);
+
+    async function join(req: any, res: any){
+        try {
+            const data = await crudRepository.join(req.params.eventId, req.params.userId)
+            res.status(200).json(data)
+        } catch (e){
+            console.error(e)
+            res.status(500).send("Une erreur est survenu")
+        }
+    }
 
     async function create(req: any, res: any) {
         try {
