@@ -16,7 +16,8 @@ export default class UserRepository extends CRUDRepository {
             const getPopulate = this.reconstructPopulate(populate)
             result.populate(getPopulate)
         }
-        return await result.exec()
+        const data = await result.exec()
+        return this.afterGet(data)
     }
 
     async beforeInsert(data: any): Promise<any> {

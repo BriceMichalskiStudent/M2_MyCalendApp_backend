@@ -15,12 +15,23 @@ export default function (crudRepository: EventRepository, option: any = null) {
     option.update = update;
 
     router.put('/:eventId/join/:userId', join)
+    router.put('/:eventId/unjoin/:userId', unjoin)
 
     CRUDController(crudRepository, option, router);
 
     async function join(req: any, res: any){
         try {
             const data = await crudRepository.join(req.params.eventId, req.params.userId)
+            res.status(200).json(data)
+        } catch (e){
+            console.error(e)
+            res.status(500).send("Une erreur est survenu")
+        }
+    }
+
+    async function unjoin(req: any, res: any){
+        try {
+            const data = await crudRepository.unjoin(req.params.eventId, req.params.userId)
             res.status(200).json(data)
         } catch (e){
             console.error(e)

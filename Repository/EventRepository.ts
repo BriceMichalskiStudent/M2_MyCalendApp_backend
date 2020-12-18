@@ -2,12 +2,30 @@ import CRUDRepository from "../Core/Repository/CrudRepository";
 
 export default class EventRepository extends CRUDRepository {
 
-    async join(eventId: string, userId: string){
+    async join(eventId: string, userId: string) {
         const result = this.MongooseModel.findOne({_id: eventId})
-        const value:any = await result.exec();
-        value.followers =  value.followers ?? [];
-        value.followers.push(userId)
-        await this.MongooseModel.findOneAndUpdate({ _id: eventId }, value, { new: true })
+        const value: any = await result.exec();
+        value.followers = value.followers ?? [];
+        const index = value.followers.indexOf(userId);
+        if (index === -1) {
+            value.followers.push(userId)
+        }
+        await this.MongooseModel.findOneAndUpdate({_id: eventId}, value, {new: true})
+    }
+
+    async unjoin(eventId: string, userId: string) {
+        console.log("unjoin")
+        const result: any = this.MongooseModel.findOne({_id: eventId})
+        const value: any = await result.exec();
+        value.followers = value.followers ?? [];
+
+        const index = value.followers.indexOf(userId);
+        if (index > -1) {
+            value.followers.splice(index, 1);
+        }
+
+        console.log(value.followers)
+        await this.MongooseModel.findOneAndUpdate({_id: eventId}, value, {new: true})
     }
 
     // Override
@@ -15,7 +33,7 @@ export default class EventRepository extends CRUDRepository {
         where = where ?? {};
         console.log(where);
         const result = this.MongooseModel.find(where)
-        if(withPopulate){
+        if (withPopulate) {
             for (const populate of this.listPopulates) {
                 const getPopulate = this.reconstructPopulate(populate)
                 result.populate(getPopulate)
