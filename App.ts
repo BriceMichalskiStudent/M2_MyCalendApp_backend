@@ -59,7 +59,7 @@ class App {
 
         // enable cors
         console.log(corsOptions)
-        this.app.use(cors(corsOptions))
+        this.app.use(cors())
         this.app.use(fileUpload())
         this.app.use(express.static(process.env.PUBLIC ?? './public'))
 
